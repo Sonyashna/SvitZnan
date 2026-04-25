@@ -345,9 +345,151 @@ body.dark .example {
 𝑦>−50 <br>
 Відповідь: 𝑦∈(−50;+∞) 
 </p>
+  
 <p>
   <span style="color: red;">Зверни увагу!</span> Переносячи числа або букви в іншу частину нерівності, знак міняється на протилежний!
 </p>
+
+  <h3>Інтерактивний дослідник</h3>
+  Посувай повзунки $a$ та $b$. Перевір, що відбувається з центральним знаком ($>$ або $<$), коли коефіцієнт $a$ стає від'ємним.
+  <span style="color: red;">Зверни увагу!</span> Коли ділиш на «мінус» — знак нерівності змінюється на протидежний! Перевір це на практиці нижче
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background-color: #fff;">
+  <h3 style="text-align: center; margin-top: 0; color: #333;">Дослідник лінійної нерівності: ax > b</h3>
+  
+  <div style="margin-bottom: 15px;">
+    <label>Коефіцієнт <b>a</b>: <span id="valA" style="font-weight: bold; color: #0066cc;">2</span></label>
+    <input type="range" id="sliderA" min="-10" max="10" value="2" style="width: 100%; cursor: pointer;">
+  </div>
+  
+  <div style="margin-bottom: 15px;">
+    <label>Число <b>b</b>: <span id="valB" style="font-weight: bold; color: #0066cc;">4</span></label>
+    <input type="range" id="sliderB" min="-20" max="20" value="4" style="width: 100%; cursor: pointer;">
+  </div>
+
+  <div style="background: #f4f4f9; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+    <div style="font-size: 1.4em; text-align: center; margin-bottom: 15px; font-weight: bold; color: #333;" id="equationDisplay">2x > 4</div>
+    <div id="stepsDisplay" style="font-size: 1.1em; color: #444; line-height: 1.5;"></div>
+  </div>
+
+  <canvas id="numberLine" width="560" height="100" style="width: 100%; border: 1px solid #ddd; border-radius: 5px; background: #fff;"></canvas>
+</div>
+
+<script>
+  const sliderA = document.getElementById('sliderA');
+  const sliderB = document.getElementById('sliderB');
+  const valA = document.getElementById('valA');
+  const valB = document.getElementById('valB');
+  const eqDisp = document.getElementById('equationDisplay');
+  const stepsDisp = document.getElementById('stepsDisplay');
+  const canvas = document.getElementById('numberLine');
+  const ctx = canvas.getContext('2d');
+
+  function update() {
+    let a = parseInt(sliderA.value);
+    let b = parseInt(sliderB.value);
+    valA.innerText = a;
+    valB.innerText = b;
+
+    let bStr = b < 0 ? `(${b})` : b;
+    eqDisp.innerHTML = `${a}x > ${b}`;
+    
+    let steps = "";
+    let root = null;
+    let direction = ""; 
+
+    if (a === 0) {
+      steps += `Підставляємо a = 0: <br> 0 · x > ${b} <br>`;
+      if (b < 0) {
+        steps += `Оскільки 0 завжди більше за від'ємне число, нерівність правильна для будь-якого x.<br><b>Відповідь: x ∈ (-∞; +∞)</b>`;
+        direction = "all";
+      } else {
+        steps += `Оскільки 0 не може бути більшим за ${b}, нерівність не має розв'язків.<br><b>Відповідь: ∅ (розв'язків немає)</b>`;
+        direction = "none";
+      }
+    } else {
+      root = b / a;
+      let rootStr = Number.isInteger(root) ? root.toString() : root.toFixed(2);
+      steps += `Ділимо обидві частини на ${a}. <br>`;
+      if (a > 0) {
+        steps += `Оскільки a > 0, знак нерівності <b>не змінюється</b>.<br>`;
+        steps += `x > ${rootStr} <br><b>Відповідь: x ∈ (${rootStr}; +∞)</b>`;
+        direction = ">";
+      } else {
+        steps += `<span style="color: #d9534f; font-weight: bold;">Оскільки a < 0, знак нерівності ЗМІНЮЄТЬСЯ на протилежний!</span><br>`;
+        steps += `x < ${rootStr} <br><b>Відповідь: x ∈ (-∞; ${rootStr})</b>`;
+        direction = "<";
+      }
+    }
+    stepsDisp.innerHTML = steps;
+    drawNumberLine(root, direction);
+  }
+
+  function drawNumberLine(root, direction) {
+    let w = canvas.width;
+    let h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Вісь
+    ctx.beginPath();
+    ctx.moveTo(20, h/2);
+    ctx.lineTo(w - 20, h/2);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#333';
+    ctx.stroke();
+
+    // Стрілка
+    ctx.beginPath();
+    ctx.moveTo(w - 20, h/2);
+    ctx.lineTo(w - 30, h/2 - 5);
+    ctx.lineTo(w - 30, h/2 + 5);
+    ctx.fillStyle = '#333';
+    ctx.fill();
+
+    if (direction === "none") {
+      ctx.fillStyle = '#d9534f';
+      ctx.font = '18px Arial';
+      ctx.fillText('Розв\\'язків немає', w/2 - 70, h/2 - 20);
+      return;
+    }
+
+    if (direction === "all") {
+      ctx.fillStyle = 'rgba(92, 184, 92, 0.3)';
+      ctx.fillRect(20, h/2 - 10, w - 40, 20);
+      ctx.fillStyle = '#5cb85c';
+      ctx.font = '18px Arial';
+      ctx.fillText('Усі дійсні числа', w/2 - 60, h/2 - 20);
+      return;
+    }
+
+    // Заштрихована область
+    let cx = w / 2;
+    ctx.fillStyle = 'rgba(2, 117, 216, 0.3)';
+    if (direction === ">") {
+      ctx.fillRect(cx, h/2 - 10, w - 20 - cx, 20);
+    } else if (direction === "<") {
+      ctx.fillRect(20, h/2 - 10, cx - 20, 20);
+    }
+
+    // Точка (виколота, бо нерівність строга)
+    ctx.beginPath();
+    ctx.arc(cx, h/2, 6, 0, 2 * Math.PI);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#333';
+    ctx.stroke();
+
+    // Підпис координати
+    ctx.fillStyle = '#333';
+    ctx.font = '16px Arial';
+    let rootStr = Number.isInteger(root) ? root : root.toFixed(1);
+    ctx.fillText(rootStr, cx - 10, h/2 + 25);
+  }
+
+  sliderA.addEventListener('input', update);
+  sliderB.addEventListener('input', update);
+  update(); // Ініціалізація
+</script>
 <details>
   <summary><strong>Завдання</strong></summary>
   <p>1. Пройдіть гру“Розв’язування лінійних нерівностей”:   <a href="https://learningapps.org/view8129872" target="_blank">https://learningapps.org/view8129872</a><br>
