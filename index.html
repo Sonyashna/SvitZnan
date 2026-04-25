@@ -130,6 +130,21 @@ body.dark .example {
   background: #0056b3;
 }
 
+/* Стилі для тренажера */
+.explorer-container {
+  font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px;
+  border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  background-color: #fff; color: #333;
+}
+.explorer-box { background: #f4f4f9; padding: 15px; border-radius: 5px; margin-bottom: 15px; }
+.explorer-val { font-weight: bold; color: #0066cc; }
+
+/* Темна тема для тренажера */
+body.dark .explorer-container { background-color: #2c2c2c; border-color: #444; color: #e0e0e0; }
+body.dark .explorer-box { background: #1e1e1e; }
+body.dark .explorer-val { color: #90caf9; }
+body.dark .explorer-container canvas { border-color: #555 !important; background: #1e1e1e !important; }
+    
 </style>
 </head>
 <body>
@@ -353,36 +368,36 @@ body.dark .example {
   <h3>Інтерактивний дослідник</h3>
  <p> Посувай повзунки 𝑎 та 𝑏. Перевір, що відбувається з центральним знаком (> або <), коли коефіцієнт 𝑎 стає від'ємним.</p>
   
-  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background-color: #fff;">
-  <h3 style="text-align: center; margin-top: 0; color: #333;">Дослідник лінійної нерівності: ax > b</h3>
+  <div class="explorer-container">
+  <h3 style="text-align: center; margin-top: 0; color: inherit;">Дослідник лінійної нерівності: ax > b</h3>
   
   <div style="margin-bottom: 15px;">
-    <label>Коефіцієнт <b>a</b>: <span id="valA" style="font-weight: bold; color: #0066cc;">2</span></label>
+    <label>Коефіцієнт <b>a</b>: <span id="valA" class="explorer-val">2</span></label>
     <input type="range" id="sliderA" min="-10" max="10" value="2" style="width: 100%; cursor: pointer;">
   </div>
   
   <div style="margin-bottom: 15px;">
-    <label>Число <b>b</b>: <span id="valB" style="font-weight: bold; color: #0066cc;">4</span></label>
+    <label>Число <b>b</b>: <span id="valB" class="explorer-val">4</span></label>
     <input type="range" id="sliderB" min="-20" max="20" value="4" style="width: 100%; cursor: pointer;">
   </div>
 
-  <div style="background: #f4f4f9; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
-    <div style="font-size: 1.4em; text-align: center; margin-bottom: 15px; font-weight: bold; color: #333;" id="equationDisplay">2x > 4</div>
-    <div id="stepsDisplay" style="font-size: 1.1em; color: #444; line-height: 1.5;"></div>
+  <div class="explorer-box">
+    <div style="font-size: 1.4em; text-align: center; margin-bottom: 15px; font-weight: bold;" id="equationDisplay">2x > 4</div>
+    <div id="stepsDisplay" style="font-size: 1.1em; line-height: 1.5;"></div>
   </div>
 
   <canvas id="numberLine" width="560" height="100" style="width: 100%; border: 1px solid #ddd; border-radius: 5px; background: #fff;"></canvas>
 </div>
 
 <script>
-  const sliderA = document.getElementById('sliderA');
-  const sliderB = document.getElementById('sliderB');
-  const valA = document.getElementById('valA');
-  const valB = document.getElementById('valB');
-  const eqDisp = document.getElementById('equationDisplay');
-  const stepsDisp = document.getElementById('stepsDisplay');
-  const canvas = document.getElementById('numberLine');
-  const ctx = canvas.getContext('2d');
+  const sliderA = document.getElementById("sliderA");
+  const sliderB = document.getElementById("sliderB");
+  const valA = document.getElementById("valA");
+  const valB = document.getElementById("valB");
+  const eqDisp = document.getElementById("equationDisplay");
+  const stepsDisp = document.getElementById("stepsDisplay");
+  const canvas = document.getElementById("numberLine");
+  const ctx = canvas.getContext("2d");
 
   function update() {
     let a = parseInt(sliderA.value);
@@ -390,33 +405,34 @@ body.dark .example {
     valA.innerText = a;
     valB.innerText = b;
 
-    let bStr = b < 0 ? `(${b})` : b;
-    eqDisp.innerHTML = `${a}x > ${b}`;
+    eqDisp.innerHTML = a + "x > " + b;
     
     let steps = "";
     let root = null;
     let direction = ""; 
 
     if (a === 0) {
-      steps += `Підставляємо a = 0: <br> 0 · x > ${b} <br>`;
+      steps += "Підставляємо a = 0: <br> 0 · x > " + b + " <br>";
       if (b < 0) {
-        steps += `Оскільки 0 завжди більше за від'ємне число, нерівність правильна для будь-якого x.<br><b>Відповідь: x ∈ (-∞; +∞)</b>`;
+        steps += "Оскільки 0 завжди більше за від'ємне число, нерівність правильна для будь-якого x.<br><b>Відповідь: x ∈ (-∞; +∞)</b>";
         direction = "all";
       } else {
-        steps += `Оскільки 0 не може бути більшим за ${b}, нерівність не має розв'язків.<br><b>Відповідь: ∅ (розв'язків немає)</b>`;
+        steps += "Оскільки 0 не може бути більшим за " + b + ", нерівність не має розв'язків.<br><b>Відповідь: ∅ (розв'язків немає)</b>";
         direction = "none";
       }
     } else {
       root = b / a;
       let rootStr = Number.isInteger(root) ? root.toString() : root.toFixed(2);
-      steps += `Ділимо обидві частини на ${a}. <br>`;
+      steps += "Ділимо обидві частини на " + a + ". <br>";
       if (a > 0) {
-        steps += `Оскільки a > 0, знак нерівності <b>не змінюється</b>.<br>`;
-        steps += `x > ${rootStr} <br><b>Відповідь: x ∈ (${rootStr}; +∞)</b>`;
+        steps += "Оскільки a > 0, знак нерівності <b>не змінюється</b>.<br>";
+        steps += "x > " + rootStr + " <br><b>Відповідь: x ∈ (" + rootStr + "; +∞)</b>";
         direction = ">";
       } else {
-        steps += `<span style="color: #d9534f; font-weight: bold;">Оскільки a < 0, знак нерівності ЗМІНЮЄТЬСЯ на протилежний!</span><br>`;
-        steps += `x < ${rootStr} <br><b>Відповідь: x ∈ (-∞; ${rootStr})</b>`;
+        // Червоний колір для світлої теми, світло-кораловий для темної
+        let alertColor = document.body.classList.contains("dark") ? "#ff6b6b" : "#d9534f";
+        steps += "<span style='color: " + alertColor + "; font-weight: bold;'>Оскільки a < 0, знак нерівності ЗМІНЮЄТЬСЯ на протилежний!</span><br>";
+        steps += "x < " + rootStr + " <br><b>Відповідь: x ∈ (-∞; " + rootStr + ")</b>";
         direction = "<";
       }
     }
@@ -429,66 +445,75 @@ body.dark .example {
     let h = canvas.height;
     ctx.clearRect(0, 0, w, h);
 
-    // Вісь
+    // Визначаємо кольори залежно від теми
+    let isDark = document.body.classList.contains("dark");
+    let mainColor = isDark ? "#e0e0e0" : "#333";
+    let bgColor = isDark ? "#1e1e1e" : "#fff";
+
     ctx.beginPath();
     ctx.moveTo(20, h/2);
     ctx.lineTo(w - 20, h/2);
     ctx.lineWidth = 2;
-    ctx.strokeStyle = '#333';
+    ctx.strokeStyle = mainColor;
     ctx.stroke();
 
-    // Стрілка
     ctx.beginPath();
     ctx.moveTo(w - 20, h/2);
     ctx.lineTo(w - 30, h/2 - 5);
     ctx.lineTo(w - 30, h/2 + 5);
-    ctx.fillStyle = '#333';
+    ctx.fillStyle = mainColor;
     ctx.fill();
 
     if (direction === "none") {
-      ctx.fillStyle = '#d9534f';
-      ctx.font = '18px Arial';
+      ctx.fillStyle = isDark ? "#ff6b6b" : "#d9534f";
+      ctx.font = "18px Arial";
       ctx.fillText("Розв'язків немає", w/2 - 70, h/2 - 20);
       return;
     }
 
     if (direction === "all") {
-      ctx.fillStyle = 'rgba(92, 184, 92, 0.3)';
+      ctx.fillStyle = isDark ? "rgba(129, 199, 132, 0.3)" : "rgba(92, 184, 92, 0.3)";
       ctx.fillRect(20, h/2 - 10, w - 40, 20);
-      ctx.fillStyle = '#5cb85c';
-      ctx.font = '18px Arial';
-      ctx.fillText('Усі дійсні числа', w/2 - 60, h/2 - 20);
+      ctx.fillStyle = isDark ? "#81c784" : "#5cb85c";
+      ctx.font = "18px Arial";
+      ctx.fillText("Усі дійсні числа", w/2 - 60, h/2 - 20);
       return;
     }
 
-    // Заштрихована область
     let cx = w / 2;
-    ctx.fillStyle = 'rgba(2, 117, 216, 0.3)';
+    ctx.fillStyle = isDark ? "rgba(100, 181, 246, 0.3)" : "rgba(2, 117, 216, 0.3)";
     if (direction === ">") {
       ctx.fillRect(cx, h/2 - 10, w - 20 - cx, 20);
     } else if (direction === "<") {
       ctx.fillRect(20, h/2 - 10, cx - 20, 20);
     }
 
-    // Точка (виколота, бо нерівність строга)
     ctx.beginPath();
     ctx.arc(cx, h/2, 6, 0, 2 * Math.PI);
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = bgColor;
     ctx.fill();
     ctx.lineWidth = 2;
-    ctx.strokeStyle = '#333';
+    ctx.strokeStyle = mainColor;
     ctx.stroke();
 
-    // Підпис координати
-    ctx.fillStyle = '#333';
-    ctx.font = '16px Arial';
+    ctx.fillStyle = mainColor;
+    ctx.font = "16px Arial";
     let rootStr = Number.isInteger(root) ? root : root.toFixed(1);
     ctx.fillText(rootStr, cx - 10, h/2 + 25);
   }
 
-  sliderA.addEventListener('input', update);
-  sliderB.addEventListener('input', update);
-  update(); // Ініціалізація
+  sliderA.addEventListener("input", update);
+  sliderB.addEventListener("input", update);
+
+  // Слухаємо твою кнопку перемикання теми, щоб миттєво перемалювати графік!
+  const existingToggleBtn = document.getElementById("themeToggle");
+  if(existingToggleBtn) {
+    existingToggleBtn.addEventListener("click", () => {
+      setTimeout(update, 50); 
+    });
+  }
+
+  update();
 </script>
 <details>
   <summary><strong>Завдання</strong></summary>
